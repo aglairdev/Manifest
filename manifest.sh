@@ -1,12 +1,12 @@
 #!/bin/bash
 
 #Configs
-VERSION="1.3"
+VERSION="1.4"
 AGL="ꕤ"
 
 #Endpoints
 URL_RYU="https://generator.ryuu.lol/download?appid="
-URL_MORRENUS="https://manifest.morrenus.xyz/api/v1/manifest/"
+URL_MORRENUS="https://hubcapmanifest.com/api/v1/manifest/"
 URL_SUSHI="https://raw.githubusercontent.com/sushi-dev55-alt/sushitools-games-repo-alt/refs/heads/main/"
 URL_STEAM_SEARCH="https://store.steampowered.com/api/storesearch/?l=latam&cc=BR&term="
 
@@ -152,9 +152,9 @@ import sys, json, re
 try:
     data = json.load(sys.stdin)
     name = data[next(iter(data))]['data']['name']
-    name = re.sub(r'[^\w\s]', '', name) # Remove especiais
-    name = re.sub(r'\s+', '_', name)   # Espaço vira _
-    clean_name = name[:20]             # Limite 20 chars
+    name = re.sub(r'[^\w\s]', '', name) 
+    name = re.sub(r'\s+', '_', name)   
+    clean_name = name[:20]             
     print(f'{clean_name}-{sys.argv[1]}.zip')
 except:
     print(f'{sys.argv[1]}.zip')
@@ -250,8 +250,8 @@ while true; do
     show_header
     echo -e "FONTES"
     echo -e "──────"
-    [ -f "$FILE_RYU_CONFIG" ] && echo -e "Ryu       [${GREEN}PRONTO${NC}]" || echo -e "Ryu       [${RED}PENDENTE${NC}]"
     [ -f "$FILE_MOR_CONFIG" ] && echo -e "Morrenus  [${GREEN}PRONTO${NC}]" || echo -e "Morrenus  [${RED}PENDENTE${NC}]"
+    [ -f "$FILE_RYU_CONFIG" ] && echo -e "Ryu       [${GREEN}PRONTO${NC}]" || echo -e "Ryu       [${RED}PENDENTE${NC}]"
     echo -e "Sushi     [${GREEN}PRONTO${NC}]"
     echo -e "${CYAN}------------------------------------------${NC}"
     echo -e "\nINTEGRAÇÃO"
@@ -295,13 +295,19 @@ while true; do
             echo -e "\nAppID: ${APPID}"
             echo -e "${CYAN}------------------------------------------${NC}\n"
             FOUND=false
-            
-            # Sushi
-            echo -n "Sushi: "
-            if [ $(curl -o "$FILE_PATH" -s -w "%{http_code}" -L "${URL_SUSHI}${APPID}.zip") == "200" ]; then
-                echo -e "${GREEN}SUCESSO${NC}"; FOUND=true
-            else
-                echo -e "${RED}INDISPONÍVEL${NC}"; rm -f "$FILE_PATH"
+
+            # Morrenus
+            if [ -f "$FILE_MOR_CONFIG" ]; then
+                source "$FILE_MOR_CONFIG"
+                echo -n "Morrenus: "
+                HTTP_STATUS=$(curl -o "$FILE_PATH" -s -H "Authorization: Bearer $KEY" -w "%{http_code}" -L "${URL_MORRENUS}${APPID}")
+                if [ "$HTTP_STATUS" == "200" ]; then
+                    echo -e "${GREEN}SUCESSO${NC}"; FOUND=true
+                elif [ "$HTTP_STATUS" == "401" ] || [ "$HTTP_STATUS" == "403" ]; then
+                    echo -e "${RED}CHAVE EXPIRADA${NC}"; rm -f "$FILE_MOR_CONFIG" "$FILE_PATH"
+                else
+                    echo -e "${RED}INDISPONÍVEL${NC}"; rm -f "$FILE_PATH"
+                fi
             fi
 
             # Ryu
@@ -315,15 +321,11 @@ while true; do
                 fi
             fi
 
-            # Morrenus
-            if [ "$FOUND" = false ] && [ -f "$FILE_MOR_CONFIG" ]; then
-                source "$FILE_MOR_CONFIG"
-                echo -n "Morrenus: "
-                HTTP_STATUS=$(curl -o "$FILE_PATH" -s -H "Authorization: Bearer $KEY" -w "%{http_code}" -L "${URL_MORRENUS}${APPID}")
-                if [ "$HTTP_STATUS" == "200" ]; then
+            # Sushi
+            if [ "$FOUND" = false ]; then
+                echo -n "Sushi: "
+                if [ $(curl -o "$FILE_PATH" -s -w "%{http_code}" -L "${URL_SUSHI}${APPID}.zip") == "200" ]; then
                     echo -e "${GREEN}SUCESSO${NC}"; FOUND=true
-                elif [ "$HTTP_STATUS" == "401" ] || [ "$HTTP_STATUS" == "403" ]; then
-                    echo -e "${RED}CHAVE EXPIRADA${NC}"; rm -f "$FILE_MOR_CONFIG" "$FILE_PATH"
                 else
                     echo -e "${RED}INDISPONÍVEL${NC}"; rm -f "$FILE_PATH"
                 fi
