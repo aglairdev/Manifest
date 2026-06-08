@@ -1,37 +1,38 @@
 #!/bin/bash
 
 #Configs
-VERSION="1.4"
+VERSION="1.5"
 AGL="ꕤ"
 
-#Endpoints
+#Rotas
 URL_RYU="https://generator.ryuu.lol/download?appid="
 URL_MORRENUS="https://hubcapmanifest.com/api/v1/manifest/"
 URL_SUSHI="https://raw.githubusercontent.com/sushi-dev55-alt/sushitools-games-repo-alt/refs/heads/main/"
 URL_STEAM_SEARCH="https://store.steampowered.com/api/storesearch/?l=latam&cc=BR&term="
 
-#Files
+#Arquivos
 DIR_CONFIG="$HOME/.config/Manifest"
 DIR_DOWNLOAD="$HOME/Downloads/Manifests"
 FILE_RYU_CONFIG="$DIR_CONFIG/.ryu_config"
 FILE_MOR_CONFIG="$DIR_CONFIG/.morrenus_config"
 FILE_ACCELA_CONFIG="$DIR_CONFIG/.accela_enabled"
 BIN_REAL_ACCELA="$HOME/.local/share/ACCELA/run.sh"
+FILE_ACCELA_CONF="$HOME/.config/Tachibana Labs/ACCELA.conf"
 
-#Enter-the-wired
+#enter-the-wired
 DIR_WIRED="$HOME/enter-the-wired"
 BIN_ACCELA="$DIR_WIRED/accela"
 BIN_SLS="$DIR_WIRED/slssteam"
 BIN_UNINSTALL="$DIR_WIRED/uninstall"
 
-#Colors
+#Cores
 CYAN='\033[0;36m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m'
 
-# Colors (ProtonDB)
+# Cores (ProtonDB)
 ST_PLATINA='\033[1;36m' 
 ST_OURO='\033[1;33m'    
 ST_PRATA='\033[0;37m'   
@@ -39,7 +40,7 @@ ST_BRONZE='\033[0;33m'
 ST_BORKED='\033[1;31m'  
 ST_NATIVO='\033[1;32m'  
 
-# Colors (Steam)
+# Cores (Steam)
 CAT_JOGO='\033[1;34m'   
 CAT_DLC='\033[1;35m'    
 CAT_SOUND='\033[1;32m'
@@ -70,6 +71,20 @@ check_update() {
         fi
         echo ""
     fi
+}
+
+apply_accela_defaults() {
+    if [ ! -f "$BIN_REAL_ACCELA" ]; then return; fi
+    if [ ! -f "$FILE_ACCELA_CONF" ]; then return; fi
+    {
+        for KEY in generate_achievements use_steamless; do
+            if grep -q "^${KEY}=" "$FILE_ACCELA_CONF"; then
+                sed -i "s/^${KEY}=.*/${KEY}=true/" "$FILE_ACCELA_CONF"
+            else
+                echo "${KEY}=true" >> "$FILE_ACCELA_CONF"
+            fi
+        done
+    } &>/dev/null &
 }
 
 get_proton_status() {
@@ -186,14 +201,16 @@ menu_accela() {
             fi
             echo -e "\nOs scripts estão em:"
             echo -e "~/.local/share/ACCELA/"
-            echo -e "------------------------------------------"
+            echo -e "${CYAN}------------------------------------------${NC}"
             echo -e "\nO QUE DESEJA FAZER?"
             [ -f "$FILE_ACCELA_CONFIG" ] && echo -e "\n[1] Desativar integração" || echo -e "\n[1] Ativar integração"
-            echo -e "[2] Atualizar Accela"
-            echo -e "[3] Atualizar SLSsteam"
-            echo -e "[4] Atualizar enter-the-wired"
-            echo -e "[5] Remover tudo"
-            echo -e "[6] Voltar"
+            echo -e "[2] Configurar conquistas"
+            echo -e "[3] Atualizar Accela"
+            echo -e "[4] Atualizar SLSsteam"
+            echo -e "[5] Atualizar enter-the-wired"
+            echo -e "[6] Remover tudo"
+            echo -e "[7] Voltar"
+            echo -e "${CYAN}------------------------------------------${NC}"
         fi
 
         echo ""
@@ -219,14 +236,19 @@ menu_accela() {
                         touch "$FILE_ACCELA_CONFIG"
                     fi
                     ;;
-                2) [ -f "$BIN_ACCELA" ] && bash "$BIN_ACCELA" || echo -e "${RED}Erro: Script ausente.${NC}"; read -p "Enter..." ;;
-                3) [ -f "$BIN_SLS" ] && bash "$BIN_SLS" || echo -e "${RED}Erro: Script ausente.${NC}"; read -p "Enter..." ;;
-                4)
+                2)
+                    source "$HOME/.local/share/ACCELA/.venv/bin/activate" && python3 "$HOME/.local/share/ACCELA/src/deps/SLScheevo/SLScheevo.py"
+                    deactivate 2>/dev/null
+                    read -p "Pressione Enter para continuar..."
+                    ;;
+                3) [ -f "$BIN_ACCELA" ] && bash "$BIN_ACCELA" || echo -e "${RED}Erro: Script ausente.${NC}"; read -p "Enter..." ;;
+                4) [ -f "$BIN_SLS" ] && bash "$BIN_SLS" || echo -e "${RED}Erro: Script ausente.${NC}"; read -p "Enter..." ;;
+                5)
                     echo -e "\n${CYAN}Atualizando enter-the-wired...${NC}"
                     curl -fsSL https://raw.githubusercontent.com/aglairdev/enter-the-wired/main/enter-the-wired | bash
                     read -p "Pressione Enter para continuar..."
                     ;;
-                5) 
+                6) 
                     read -p "Remover Accela, SLSsteam, SLScheevo, Steamless? (s/n): " CONFIRM
                     if [ "$CONFIRM" = "s" ]; then
                         [ -f "$BIN_UNINSTALL" ] && bash "$BIN_UNINSTALL"
@@ -237,7 +259,7 @@ menu_accela() {
                         return
                     fi
                     ;;
-                6) return ;;
+                7) return ;;
                 *) echo -e "${RED}Opção inválida.${NC}"; sleep 1 ;;
             esac
         fi
@@ -245,6 +267,7 @@ menu_accela() {
 }
 
 check_update
+apply_accela_defaults
 
 while true; do
     show_header
@@ -265,10 +288,11 @@ while true; do
     fi
     echo -e "${CYAN}------------------------------------------${NC}"
     echo -e "\n1. Baixar manifests"
-    echo "2. Configurar Ryu"
-    echo "3. Configurar Morrenus"
+    echo "2. Configurar Morrenus"
+    echo "3. Configurar Ryu"
     echo "4. Configurar Accela"
     echo "5. Sair"
+    echo -e "${CYAN}------------------------------------------${NC}"
     echo ""
     read -p "Selecione: " OPT
 
@@ -348,6 +372,24 @@ while true; do
             ;;
         2)
             show_header
+            echo -e "CONFIG MORRENUS\n───────────────\n"
+            echo -e "> Acesse: ${CYAN}https://hubcapmanifest.com/${NC}"
+            echo -e "${CYAN}------------------------------------------${NC}"
+            echo ""
+            read -p "$(echo -e "API Key (${RED}q${NC} para voltar): ")" API_KEY
+            if [ "$API_KEY" != "q" ]; then
+                if [[ "$API_KEY" =~ ^smm_[a-f0-9]{96}$ ]]; then
+                    mkdir -p "$DIR_CONFIG"
+                    echo "KEY='$API_KEY'" > "$FILE_MOR_CONFIG"
+                    echo -e "\n${GREEN}Configurado!${NC}"
+                else
+                    echo -e "\n${RED}Chave inválida.${NC}"
+                fi
+                sleep 2
+            fi
+            ;;
+        3)
+            show_header
             echo -e "CONFIG RYU\n──────────\n"
             echo "Siga os passos:"
             echo ""
@@ -366,24 +408,6 @@ while true; do
                     echo -e "\n${GREEN}Configurado!${NC}"
                 else
                     echo -e "\n${RED}Dados inválidos.${NC}"
-                fi
-                sleep 2
-            fi
-            ;;
-        3)
-            show_header
-            echo -e "CONFIG MORRENUS\n───────────────\n"
-            echo -e "> Acesse: ${CYAN}https://hubcapmanifest.com/${NC}"
-            echo -e "${CYAN}------------------------------------------${NC}"
-            echo ""
-            read -p "$(echo -e "API Key (${RED}q${NC} para voltar): ")" API_KEY
-            if [ "$API_KEY" != "q" ]; then
-                if [[ "$API_KEY" =~ ^smm_[a-f0-9]{96}$ ]]; then
-                    mkdir -p "$DIR_CONFIG"
-                    echo "KEY='$API_KEY'" > "$FILE_MOR_CONFIG"
-                    echo -e "\n${GREEN}Configurado!${NC}"
-                else
-                    echo -e "\n${RED}Chave inválida.${NC}"
                 fi
                 sleep 2
             fi
