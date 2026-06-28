@@ -8,6 +8,8 @@
 
 Buscador de manifests.
 
+[![Configuração](https://img.shields.io/badge/Configuração-D32F2F?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=kFyHxb_QT_E)
+
 ![Shell](https://img.shields.io/badge/Shell-333333?style=flat-square&logo=gnu-bash&logoColor=white)
 
 ## Requisitos
