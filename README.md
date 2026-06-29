@@ -8,9 +8,17 @@
 
 Buscador de manifests.
 
-[![Configuração](https://img.shields.io/badge/Configuração-D32F2F?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=kFyHxb_QT_E)
-
 ![Shell](https://img.shields.io/badge/Shell-333333?style=flat-square&logo=gnu-bash&logoColor=white)
+
+<div align="center">
+
+| Menu | Config |
+|:----:|:------:|
+| <img src="https://github.com/user-attachments/assets/c4cf74fb-9b3f-490a-854e-96ed1d8d0679" alt="Menu demo" width="350"> | <img src="https://github.com/user-attachments/assets/78017af9-1685-487e-b9e0-4f5c0bf2240a" alt="Config demo" width="350"> |
+
+[![Configuração](https://img.shields.io/badge/Configuração-333333?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=kFyHxb_QT_E)
+
+</div>
 
 ## Requisitos
 
