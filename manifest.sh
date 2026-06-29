@@ -166,9 +166,8 @@ resolve_appid() {
             ((i++))
         done
         
-        echo -e "\n[${RED}q${NC}] Cancelar" >&2
         echo "" >&2
-        read -p "Selecione: " CHOICE >&2
+        read -p "> " CHOICE >&2
         
         if [[ "$CHOICE" =~ ^[1-9]$ ]] && [ "$CHOICE" -le "${#ids[@]}" ]; then
             echo "${ids[$((CHOICE-1))]}"
