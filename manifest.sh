@@ -42,7 +42,7 @@ NC='\033[0m'
 # Cores (ProtonDB)
 ST_PLATINA='\033[1;36m' 
 ST_OURO='\033[1;33m'    
-ST_PRATA='\033[0;37m'   
+ST_PRATA='\033[38;2;150;150;150m'  
 ST_BRONZE='\033[0;33m'  
 ST_BORKED='\033[1;31m'  
 ST_NATIVO='\033[1;32m'  
