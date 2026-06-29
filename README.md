@@ -14,7 +14,7 @@ Buscador de manifests.
 
 | Menu | Config |
 |:----:|:------:|
-| <img src="https://github.com/user-attachments/assets/c4cf74fb-9b3f-490a-854e-96ed1d8d0679" alt="Menu demo" width="350"> | <img src="https://github.com/user-attachments/assets/78017af9-1685-487e-b9e0-4f5c0bf2240a" alt="Config demo" width="350"> |
+| <img src="https://github.com/user-attachments/assets/fac10755-9fc9-4ac7-9f4b-e5de14f0ddba" alt="Menu demo" width="350"> | <img src="https://github.com/user-attachments/assets/292bb8c0-a345-4450-a19f-df8279f6f97a" alt="Config demo" width="350"> |
 
 [![Configuração](https://img.shields.io/badge/Configuração-333333?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=kFyHxb_QT_E)
 
@@ -22,7 +22,7 @@ Buscador de manifests.
 
 ## Requisitos
 
-- **Dependências**: `bash`, `curl`, `python3`
+- **Dependências**: `bash` `curl`
 
 ## O que faz
 
