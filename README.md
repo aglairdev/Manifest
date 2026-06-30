@@ -22,7 +22,7 @@ Buscador de manifests.
 
 ## Requisitos
 
-- **Dependências**: `bash` `curl`
+- **Dependências**: `bash` `curl` `python3`
 
 ## O que faz
 
